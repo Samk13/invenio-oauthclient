@@ -59,9 +59,9 @@ def info_handler(remote, resp):
         "user": {
             "active": True,
             "email": user_info["email"],
-            "profile": {
+            "username": user_info.get("preferred_username"),
+            "user_profile": {
                 "full_name": user_info.get("name"),
-                "username": user_info.get("preferred_username"),
             }
         },
         "external_id": user_info["sub"],

@@ -37,8 +37,11 @@ def test_account_info(app, example_orcid):
         ioc.remote_apps['orcid'], example_data) == example_account_info
 
     assert account_info(ioc.remote_apps['orcid'], {}) == \
-        dict(external_id=None, external_method='orcid', user=dict(profile=dict(
-            full_name=None)))
+        dict(
+            external_id=None,
+            external_method='orcid',
+            user=dict(user_profile=dict(full_name=None))
+        )
 
 
 def test_login(app, example_orcid):
@@ -88,11 +91,12 @@ def test_authorized_signup(app_with_userprofiles, example_orcid, orcid_bio):
         assert resp.status_code == 200
 
         account_info = session[token_session_key('orcid') + '_account_info']
+        full_name = account_info['user']['user_profile']['full_name']
         data = {
             'email': example_email,
             'password': '123456',
-            'profile.username': 'pippo',
-            'profile.full_name': account_info['user']['profile']['full_name'],
+            'username': 'pippo',
+            'user_profile.full_name': full_name,
         }
 
         # Mock request to ORCID to get user bio.
@@ -119,7 +123,7 @@ def test_authorized_signup(app_with_userprofiles, example_orcid, orcid_bio):
             id=example_data['orcid']
         ).one()
         # FIXME see contrib/orcid.py line 167
-        assert user.profile.full_name == 'Josiah Carberry'
+        assert user.user_profile.full_name == 'Josiah Carberry'
         #  assert user.given_names == 'Josiah'
         #  assert user.family_name == 'Carberry'
         # check that the user's email is not yet validated

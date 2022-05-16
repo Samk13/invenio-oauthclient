@@ -50,7 +50,8 @@ def example_cern_openid_rest(request):
     ), dict(
         user=dict(
             email='john.doe@cern.ch',
-            profile=dict(username='jdoe', full_name='John Doe'),
+            username='jdoe',
+            user_profile=dict(full_name='John Doe'),
         ),
         external_id='222222', external_method='cern_openid',
         active=True

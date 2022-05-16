@@ -289,7 +289,7 @@ def _account_info(remote, resp):
 
     return dict(
         user=dict(
-            email=email.lower(), profile=dict(username=nice, full_name=name)
+            email=email.lower(), username=nice, user_profile=dict(full_name=name)
         ),
         external_id=external_id,
         external_method="cern_openid",

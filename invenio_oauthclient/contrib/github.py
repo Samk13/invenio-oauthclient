@@ -167,8 +167,8 @@ def account_info(remote, resp):
         {
             'user': {
                 'email': '...',
-                'profile': {
-                    'username': '...',
+                'username': '...',
+                'user_profile': {
                     'full_name': '...',
                 }
             },
@@ -189,8 +189,8 @@ def account_info(remote, resp):
     return dict(
         user=dict(
             email=_extract_email(gh),
-            profile=dict(
-                username=me.login,
+            username=me.login,
+            user_profile=dict(
                 full_name=me.name,
             ),
         ),

@@ -193,7 +193,7 @@ def account_info(remote, resp):
 
         {
             'user': {
-                'profile': {
+                'user_profile': {
                     'full_name': 'Full Name',
                 },
             },
@@ -211,7 +211,7 @@ def account_info(remote, resp):
         'external_id': orcid,
         'external_method': 'orcid',
         'user': {
-            'profile': {
+            'user_profile': {
                 'full_name': resp.get('name'),
             },
         },

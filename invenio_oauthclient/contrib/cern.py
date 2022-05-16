@@ -409,11 +409,11 @@ def _account_info(remote, resp):
     external_id = resource.get('uidNumber', person_id)[0]
     nice = resource['CommonName'][0]
     name = resource['DisplayName'][0]
-
     return dict(
         user=dict(
             email=email.lower(),
-            profile=dict(username=nice, full_name=name),
+            username=nice,
+            user_profile=dict(full_name=name),
         ),
         external_id=external_id, external_method='cern',
         active=True

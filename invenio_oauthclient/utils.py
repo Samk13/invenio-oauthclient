@@ -17,7 +17,6 @@ from invenio_accounts.utils import register_user
 from invenio_db import db
 from invenio_db.utils import rebuild_encrypted_properties
 from itsdangerous import TimedJSONWebSignatureSerializer
-from sqlalchemy.exc import IntegrityError
 from uritools import uricompose, urisplit
 from werkzeug.local import LocalProxy
 from werkzeug.utils import import_string
@@ -240,10 +239,13 @@ def load_or_import_from_config(key, app=None, default=None):
 
 def _create_registrationform(*args, **kwargs):
     """Default registration form after external auth success."""
+    breakpoint()
     class RegistrationForm(_security.confirm_register_form):
+        # user_profile=None
         password = None
         recaptcha = None
         submit = None  # defined in the template
+
     return RegistrationForm(*args, **kwargs)
 
 

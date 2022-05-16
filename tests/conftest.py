@@ -440,7 +440,7 @@ def example_orcid(request):
            }, dict(external_id='0000-0002-1825-0097',
                    external_method='orcid',
                    user=dict(
-                       profile=dict(
+                       user_profile=dict(
                            full_name='Josiah Carberry'
                        )
                    )
@@ -467,7 +467,8 @@ def example_cern(request):
     ), dict(
         user=dict(
             email='test.account@cern.ch',
-            profile=dict(username='taccount', full_name='Test Account'),
+            username='taccount',
+            user_profile=dict(full_name='Test Account'),
         ),
         external_id='123456', external_method='cern',
         active=True
@@ -488,10 +489,12 @@ def user(app_with_userprofiles):
     """Create users."""
     with db.session.begin_nested():
         datastore = app_with_userprofiles.extensions['security'].datastore
-        user1 = datastore.create_user(email='info@inveniosoftware.org',
-                                      password='tester', active=True)
-        profile = UserProfile(username='mynick', user=user1)
-        db.session.add(profile)
+        user1 = datastore.create_user(
+            email='info@inveniosoftware.org',
+            password='tester',
+            active=True,
+            username='mynick',
+        )
     db.session.commit()
     return user1
 
@@ -501,10 +504,12 @@ def user_rest(app_rest_with_userprofiles):
     """Create users."""
     with db.session.begin_nested():
         datastore = app_rest_with_userprofiles.extensions['security'].datastore
-        user1 = datastore.create_user(email='info@inveniosoftware.org',
-                                      password='tester', active=True)
-        profile = UserProfile(username='mynick', user=user1)
-        db.session.add(profile)
+        user1 = datastore.create_user(
+            email='info@inveniosoftware.org',
+            password='tester',
+            active=True,
+            username='mynick',
+        )
     db.session.commit()
     return user1
 
@@ -514,9 +519,9 @@ def form_test_data():
     """Test data to fill a registration form."""
     return dict(
                 email='test@tester.com',
-                profile=dict(
+                username='test123',
+                user_profile=dict(
                     full_name='Test Tester',
-                    username='test123',
                 ),
             )
 

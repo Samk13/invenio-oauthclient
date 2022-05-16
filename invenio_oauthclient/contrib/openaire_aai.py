@@ -185,7 +185,7 @@ def account_info(remote, resp):
 
         {
             'user': {
-                'profile': {
+                'user_profile': {
                     'full_name': 'Full Name',
                 },
                 'email': '<openaire-email>',
@@ -204,7 +204,7 @@ def account_info(remote, resp):
         'external_id': user_info['sub'],
         'external_method': 'openaire_aai',
         'user': {
-            'profile': {
+            'user_profile': {
                 'full_name': user_info.get('name'),
             },
             'email': user_info.get('email'),

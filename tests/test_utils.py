@@ -228,15 +228,13 @@ def test_patch_dictionary():
     """Test the dictionary patch function."""
     orig_dict = {
         "email": "user@inveniosoftware.org",
-        "profile": {
-            "username": "user"
-        },
+        "username": "user",
     }
 
     # patch some existing properties, add new ones, and leave some as is
     patch_dict = {
         "email": "admin@inveniosoftware.org",
-        "profile": {
+        "user_profile": {
             "full_name": "Test User",
         },
         "extra": [1, 2, 3],
@@ -244,8 +242,8 @@ def test_patch_dictionary():
 
     expected = {
         "email": "admin@inveniosoftware.org",
-        "profile": {
-            "username": "user",
+        "username": "user",
+        "user_profile": {
             "full_name": "Test User",
         },
         "extra": [1, 2, 3],
@@ -260,8 +258,8 @@ def test_precedence_mask(app):
     precedence_mask = {
         "email": True,
         "password": False,
-        "profile": {
-            "username": True,
+        "username": True,
+        "user_profile": {
             "full_name": False,
             "extra1": True,
             "extra2": True,
@@ -272,8 +270,8 @@ def test_precedence_mask(app):
     user_info = {
         "email": "user@inveniosoftware.org",
         "password": "somepassword",
-        "profile": {
-            "username": "test-user",
+        "username": "test-user",
+        "user_profile": {
             "full_name": "Test User",
             "extra2": 2,
             "extra3": 3,
@@ -283,8 +281,8 @@ def test_precedence_mask(app):
 
     expected_filtered_user_info = {
         "email": "user@inveniosoftware.org",
-        "profile": {
-            "username": "test-user",
+        "username": "test-user",
+        "user_profile": {
             "extra2": 2,
             "extra4": 4,
         }
@@ -293,8 +291,8 @@ def test_precedence_mask(app):
     input_values = {
         "email": "admin@inveniosoftware.org",
         "password": "anotherpassword",
-        "profile": {
-            "username": "admin",
+        "username": "admin",
+        "user_profile": {
             "full_name": "Ruler of the World",
             "extra2": 0,
             "extra3": 0,
@@ -304,8 +302,8 @@ def test_precedence_mask(app):
     expected_values = {
         "email": "user@inveniosoftware.org",
         "password": "anotherpassword",
-        "profile": {
-            "username": "test-user",
+        "username": "test-user",
+        "user_profile": {
             "full_name": "Ruler of the World",
             "extra2": 2,
             "extra3": 0,

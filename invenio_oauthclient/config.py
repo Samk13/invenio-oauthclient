@@ -105,8 +105,8 @@ follows:
     {
         "email": "user@inveniosoftware.org",
         "password": "somepassword",
-        "profile": {
-            "username": "test-user",
+        "username": "test-user",
+        "user_profile": {
             "full_name": "Test User",
         }
     }
@@ -114,13 +114,13 @@ follows:
     # precedence_mask
     {
         "email": True,
-        "profile": {
-            "username": True,
+        "username": True,
+        "user_profile": {
             "full_name": False,
         }
     }
 
-Then, the values for `email` and `profile.username` from the
+Then, the values for `email` and `username` from the
 `user_info` would be overriding any user input from the registration
 form.
 All other values would be used as provided by the user in the form.

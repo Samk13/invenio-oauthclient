@@ -93,8 +93,9 @@ def test_account_info(app, example_cern):
         dict(
             user=dict(
                 email='test.account@cern.ch',
-                profile={
-                    'full_name': u'Test Account', 'username': u'taccount'
+                username='taccount',
+                user_profile={
+                    'full_name': u'Test Account',
                 },
             ),
             external_id='123456', external_method='cern',

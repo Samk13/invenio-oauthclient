@@ -40,8 +40,8 @@ class OAuthSettingsHelper:
         precedence_mask = precedence_mask or {
             "email": True,
             "password": False,
-            "profile": {
-                "username": False,
+            "username": False,
+            "user_profile": {
                 "full_name": False,
             },
         }

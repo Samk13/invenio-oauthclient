@@ -206,8 +206,8 @@ def account_info(remote, resp):
         {
             'user': {
                 'email': '...',
-                'profile': {
-                    'username': '...',
+                'username': '...',
+                'user_profile': {
                     'full_name': '...',
                 }
             },
@@ -228,8 +228,8 @@ def account_info(remote, resp):
     return {
         'user': {
             'email': info['email'],
-            'profile': {
-                'username': info['username'],
+            'username': info['username'],
+            'user_profile': {
                 'full_name': info['name']
             },
         },
