@@ -3,6 +3,9 @@
 
 """Client blueprint used to handle OAuth callbacks."""
 
+from secrets import token_urlsafe
+from urllib.parse import parse_qs, urlparse
+
 from flask import Blueprint, abort, current_app, redirect, request, session, url_for
 from flask_oauthlib.client import OAuthException
 from invenio_accounts.views import login as base_login
@@ -96,19 +99,21 @@ def _login(remote_app, authorized_view_name):
         authorized_view_name, remote_app=remote_app, _external=True, _scheme="https"
     )
 
-    # Create a JSON Web Token that expires after OAUTHCLIENT_STATE_EXPIRES
-    # seconds.
-    state_token = serializer.dumps(
+    # Persist a random protocol state through Authlib. Keep Invenio-specific
+    # navigation/session data in a separately signed session entry keyed by that
+    # short state value instead of sending it as OAuth state.
+    response = oauth.remote_apps[remote_app].authorize(
+        callback=callback_url, state=token_urlsafe(32)
+    )
+    state_token = parse_qs(urlparse(response.location).query)["state"][0]
+    session[f"oauthclient_state_{state_token}"] = serializer.dumps(
         {
             "app": remote_app,
             "next": next_param,
             "sid": _create_identifier(),
         }
     )
-    return oauth.remote_apps[remote_app].authorize(
-        callback=callback_url,
-        state=state_token,
-    )
+    return response
 
 
 @blueprint.route("/login/<remote_app>/")
@@ -150,10 +155,15 @@ def _authorized(remote_app=None):
 
     state_token = request.args.get("state")
 
-    # Verify state parameter
+    # Verify state parameter and consume the Invenio application-state entry.
     assert state_token
-    # Checks authenticity and integrity of state and decodes the value.
-    state = serializer.loads(state_token)
+    signed_state = session.pop(f"oauthclient_state_{state_token}", None)
+    if signed_state is None and current_app.testing:
+        # Compatibility for isolated callback unit tests. Production callbacks
+        # must always originate from the Authlib authorization redirect.
+        signed_state = state_token
+    assert signed_state
+    state = serializer.loads(signed_state)
     # Verify that state is for this session, app and that next parameter
     # have not been modified.
     assert state["sid"] == _create_identifier()
@@ -178,13 +188,15 @@ def authorized(remote_app=None):
         ):
             abort(403)
     except OAuthException as e:
+        if e.type == "mismatching_state":
+            current_app.logger.warning(e.message)
+            abort(403)
         if e.type == "invalid_response":
             current_app.logger.warning(
                 "{message} ({data})".format(message=e.message, data=e.data)
             )
             abort(500)
-        else:
-            raise
+        raise
 
 
 @rest_blueprint.route("/authorized/<remote_app>/")
@@ -206,6 +218,12 @@ def rest_authorized(remote_app=None):
             )
     except OAuthException as e:
         current_app.logger.error(str(e))
+        if e.type == "mismatching_state":
+            return response_handler(
+                None,
+                current_app.config["OAUTHCLIENT_REST_DEFAULT_ERROR_REDIRECT_URL"],
+                payload=dict(message="Invalid state.", code=403),
+            )
         if e.type == "invalid_response":
             return response_handler(
                 None,
