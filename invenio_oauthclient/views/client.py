@@ -156,18 +156,18 @@ def _authorized(remote_app=None):
     state_token = request.args.get("state")
 
     # Verify state parameter and consume the Invenio application-state entry.
-    assert state_token
+    if not state_token:
+        raise BadData("Missing OAuth state.")
     signed_state = session.pop(f"oauthclient_state_{state_token}", None)
-    if signed_state is None and current_app.testing:
-        # Compatibility for isolated callback unit tests. Production callbacks
-        # must always originate from the Authlib authorization redirect.
-        signed_state = state_token
-    assert signed_state
+    if signed_state is None:
+        raise BadData("Unknown or replayed OAuth state.")
     state = serializer.loads(signed_state)
     # Verify that state is for this session, app and that next parameter
     # have not been modified.
-    assert state["sid"] == _create_identifier()
-    assert state["app"] == remote_app
+    if state.get("sid") != _create_identifier():
+        raise BadData("OAuth state belongs to a different session.")
+    if state.get("app") != remote_app:
+        raise BadData("OAuth state belongs to a different remote application.")
     # Store next URL
     set_session_next_url(remote_app, state["next"])
 
